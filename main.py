@@ -11,6 +11,6 @@ pending_blocks = stats_json['pools']['zcash']['blocks']['pending']
 
 if pending_blocks != 0:
     print('delta has a pending block!')
-else:
-    #print('no pending blocks')
+#else:
+#    print('no pending blocks')
 

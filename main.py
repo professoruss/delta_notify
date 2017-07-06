@@ -28,7 +28,7 @@ if pending_blocks != 0:
         pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=DeltaBlock&message=delta%20pool%20has%20a%20pending%20ZEC%20block!'
         push_to_pushover = requests.post(pushover_url, data=pushover_data)
         push_to_pushover.raw
-        print(push_to_pushover.status_code)
+        #print(push_to_pushover.status_code)
     else:
         print('delta pool has a pending ZEC block!')
 #else:

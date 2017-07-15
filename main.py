@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import os
 import requests
 requests.packages.urllib3.disable_warnings()
 from optparse import OptionParser
@@ -20,6 +21,9 @@ stats = requests.get(url)
 stats_json = json.loads(stats.text)
 pending_blocks = stats_json['pools'][options.coin]['blocks']['pending']
 
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 
 if pending_blocks != 0:
     if options.output == 'pushover':

@@ -11,6 +11,7 @@ Notify via CLI or pushover when a znomp powered pool has a block pending
 ```python main.py -c zcash -n delta -u http://zcash.deltapool.net/api/stats -o pushover```
 
 **Help:**
+
 ``` Usage: main.py [options]
 
 Options:

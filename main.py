@@ -25,7 +25,11 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
-if pending_blocks != 0:
+old_pending = {}
+if os.path.exists(options.name + '_' + options.coin + '.json'):
+    old_pending = json.loads(open(options.name + '_' + options.coin + '.json').read())
+
+if pending_blocks > old_pending:
     if options.output == 'pushover':
         pushover_url = 'https://api.pushover.net/1/messages.json'
         pushover_json = json.loads(open('pushover.json').read())
@@ -35,12 +39,14 @@ if pending_blocks != 0:
             'Content-Length' : '180'
         }
 
-        pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=' + options.name + ' Block&message=' + options.name + '%20pool%20has%20a%20pending%20' + options.coin + '%20block!'
+        pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=' + options.name + ' Block&message=' + options.name + '%20pool%20has%20a%20new%20pending%20' + options.coin + '%20block!'
         push_to_pushover = requests.post(pushover_url, data=pushover_data)
         push_to_pushover.raw
         #print(push_to_pushover.status_code)
     else:
-        print( options.name + 'pool has a pending ' + options.coin + ' block!')
+        print( options.name + 'pool has a new pending ' + options.coin + ' block!')
+
+with open(options.name + '_' + options.coin + '.json', 'w') as outfile:
+    json.dump(pending_blocks, outfile)
 #else:
 #    print('no pending blocks')
-

@@ -13,7 +13,7 @@ parser.add_option("-u", "--url", action="store", type="string", dest="url",
 parser.add_option("-n", "--name", action="store", type="string", dest="name",
                   help="name of pool", metavar="NAME")
 parser.add_option("-o", "--output", action="store", type="string", dest="output",
-                  help="output to pushover(optional)", metavar="OUTPUT")
+                  help="output to pushover(optional)", default="cli", metavar="OUTPUT")
 (options, args) = parser.parse_args()
 
 url = options.url
@@ -27,7 +27,7 @@ os.chdir(dname)
 
 old_pending = {}
 if os.path.exists(options.name + '_' + options.coin + '.json'):
-    old_pending = json.loads(open(options.name + '_' + options.coin + '.json').read())
+    old_pending = json.loads(open(options.name + '_' + options.coin + options.output + '.json').read())
 
 if pending_blocks > old_pending:
     if options.output == 'pushover':
@@ -46,7 +46,7 @@ if pending_blocks > old_pending:
     else:
         print( options.name + 'pool has a new pending ' + options.coin + ' block! (' + pending_blocks + ')')
 
-with open(options.name + '_' + options.coin + '.json', 'w') as outfile:
+with open(options.name + '_' + options.coin + options.output + '.json', 'w') as outfile:
     json.dump(pending_blocks, outfile)
 #else:
 #    print('no pending blocks')

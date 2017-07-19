@@ -31,6 +31,8 @@ if not os.path.exists('status'):
 if os.path.exists('status/' + options.name + '_' + options.coin + '_' + options.output + '.json'):
     old_pending = json.loads(open('status/' + options.name + '_' + options.coin + '_' + options.output + '.json').read())
 
+new_pending = str(pending_blocks)
+
 if pending_blocks > old_pending:
     if options.output == 'pushover':
         pushover_url = 'https://api.pushover.net/1/messages.json'
@@ -41,7 +43,6 @@ if pending_blocks > old_pending:
             'Content-Length' : '180'
         }
 
-        new_pending = str(pending_blocks)
         pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=' + options.name + ' Block&message=' + options.name + '%20pool%20has%20a%20new%20pending%20' + options.coin + '%20block! (' + new_pending + ')'
         push_to_pushover = requests.post(pushover_url, data=pushover_data)
         push_to_pushover.raw

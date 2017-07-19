@@ -39,12 +39,12 @@ if pending_blocks > old_pending:
             'Content-Length' : '180'
         }
 
-        pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=' + options.name + ' Block&message=' + options.name + '%20pool%20has%20a%20new%20pending%20' + options.coin + '%20block!'
+        pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=' + options.name + ' Block&message=' + options.name + '%20pool%20has%20a%20new%20pending%20' + options.coin + '%20block! (' + pending_blocks + ')'
         push_to_pushover = requests.post(pushover_url, data=pushover_data)
         push_to_pushover.raw
         #print(push_to_pushover.status_code)
     else:
-        print( options.name + 'pool has a new pending ' + options.coin + ' block!')
+        print( options.name + 'pool has a new pending ' + options.coin + ' block! (' + pending_blocks + ')')
 
 with open(options.name + '_' + options.coin + '.json', 'w') as outfile:
     json.dump(pending_blocks, outfile)

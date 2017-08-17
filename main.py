@@ -2,6 +2,7 @@
 import json
 import os
 import requests
+import sys
 requests.packages.urllib3.disable_warnings()
 from optparse import OptionParser
 
@@ -17,40 +18,43 @@ parser.add_option("-o", "--output", action="store", type="string", dest="output"
 (options, args) = parser.parse_args()
 
 url = options.url
-stats = requests.get(url)
-stats_json = json.loads(stats.text)
-pending_blocks = stats_json['pools'][options.coin]['blocks']['pending']
+try: stats = requests.get(url)
+except requests.exceptions.RequestException as e:
+    sys.exit(1)
+else:
+    stats_json = json.loads(stats.text)
+    pending_blocks = stats_json['pools'][options.coin]['blocks']['pending']
 
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    os.chdir(dname)
 
-old_pending = {}
-if not os.path.exists('status'):
-        os.makedirs('status')
-if os.path.exists('status/' + options.name + '_' + options.coin + '_' + options.output + '.json'):
-    old_pending = json.loads(open('status/' + options.name + '_' + options.coin + '_' + options.output + '.json').read())
+    old_pending = {}
+    if not os.path.exists('status'):
+            os.makedirs('status')
+    if os.path.exists('status/' + options.name + '_' + options.coin + '_' + options.output + '.json'):
+        old_pending = json.loads(open('status/' + options.name + '_' + options.coin + '_' + options.output + '.json').read())
 
-new_pending = str(pending_blocks)
+    new_pending = str(pending_blocks)
 
-if pending_blocks > old_pending:
-    if options.output == 'pushover':
-        pushover_url = 'https://api.pushover.net/1/messages.json'
-        pushover_json = json.loads(open('pushover.json').read())
+    if pending_blocks > old_pending:
+        if options.output == 'pushover':
+            pushover_url = 'https://api.pushover.net/1/messages.json'
+            pushover_json = json.loads(open('pushover.json').read())
 
-        headers = {
-            'Content-Type'   : 'application/x-www-form-urlencoded',
-            'Content-Length' : '180'
-        }
+            headers = {
+                'Content-Type'   : 'application/x-www-form-urlencoded',
+                'Content-Length' : '180'
+            }
 
-        pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=' + options.name + ' Block&message=' + options.name + '%20pool%20has%20a%20new%20pending%20' + options.coin + '%20block! (' + new_pending + ')'
-        push_to_pushover = requests.post(pushover_url, data=pushover_data)
-        push_to_pushover.raw
-        #print(push_to_pushover.status_code)
-    else:
-        print( options.name + 'pool has a new pending ' + options.coin + ' block! (' + new_pending + ')')
+            pushover_data = 'token=' + pushover_json['token'] + '&user=' + pushover_json['user'] + '&title=' + options.name + ' Block&message=' + options.name + '%20pool%20has%20a%20new%20pending%20' + options.coin + '%20block! (' + new_pending + ')'
+            push_to_pushover = requests.post(pushover_url, data=pushover_data)
+            push_to_pushover.raw
+            #print(push_to_pushover.status_code)
+        else:
+            print( options.name + 'pool has a new pending ' + options.coin + ' block! (' + new_pending + ')')
 
-with open('status/' + options.name + '_' + options.coin + '_' + options.output + '.json', 'w') as outfile:
-    json.dump(pending_blocks, outfile)
-#else:
-#    print('no pending blocks')
+    with open('status/' + options.name + '_' + options.coin + '_' + options.output + '.json', 'w') as outfile:
+        json.dump(pending_blocks, outfile)
+    #else:
+    #    print('no pending blocks')

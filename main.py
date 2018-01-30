@@ -18,7 +18,7 @@ parser.add_option("-o", "--output", action="store", type="string", dest="output"
 (options, args) = parser.parse_args()
 
 url = options.url
-try: stats = requests.get(url)
+try: stats = requests.get(url, timeout=10)
 except requests.exceptions.RequestException as e:
     sys.exit(1)
 else:
